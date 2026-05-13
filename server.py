@@ -6,7 +6,6 @@ import time
 
 app = FastAPI(title="Kavach.ai Core Logic")
 
-# CORS config taaki tera UI is server se baat kar sake
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -22,10 +21,8 @@ class ScanRequest(BaseModel):
 async def process_scan(request: ScanRequest):
     start_time = time.time()
     
-    # Agent 2: Security/PII Layer (Mock logic for MeitY Compliance)
     safe_data = request.packet_data.replace("Aadhaar", "[REDACTED]")
     
-    # Agent 3 & 4: Fraud Logic & Translator
     is_fraud = "free-money" in request.packet_data.lower() or "phishing" in request.packet_data.lower()
     regional_alert = "Bhai, yeh link fraud hai, ispar click mat karo." if is_fraud else "Network packet safe hai."
     
