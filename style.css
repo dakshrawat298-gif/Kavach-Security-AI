@@ -1,0 +1,17 @@
+/* style.css */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Custom glow animation for the button */
+@keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 40px rgba(0, 120, 255, 0.4); }
+    50% { box-shadow: 0 0 70px rgba(0, 120, 255, 0.8); }
+}
+
+.scanning-active .absolute.inset-3 {
+    animation: pulse-glow 1.5s infinite ease-in-out;
+    background: linear-gradient(to bottom, #10b981, #047857); /* Changes to green when scanning */
+    border-color: #34d399;
+}
