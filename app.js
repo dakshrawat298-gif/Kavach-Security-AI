@@ -1,47 +1,46 @@
-// app.js - The Brain of Kavach.ai
-
+// app.js - Connected to Python Backend
 document.addEventListener('DOMContentLoaded', () => {
     const scanBtn = document.getElementById('scanBtn');
     const statusText = document.getElementById('statusText');
-    const container = document.querySelector('.relative.z-10'); // The glass panel
+    const container = document.querySelector('.relative.z-10'); 
 
-    let isScanning = false;
-
-    scanBtn.addEventListener('click', () => {
-        if (isScanning) return; // Prevent multiple clicks
-        
-        isScanning = true;
-        
-        // UI Changes for Scanning State
-        scanBtn.classList.add('scale-95');
+    scanBtn.addEventListener('click', async () => {
+        // UI ko scanning state mein daalna
+        statusText.innerHTML = '<span class="text-blue-400 animate-pulse">Analyzing Network Packets via FastAPI...</span>';
         container.classList.add('scanning-active');
-        statusText.innerHTML = '<span class="text-blue-400 animate-pulse">Initializing Bhashini AI Agents...</span>';
-        statusText.classList.replace('text-gray-400', 'text-blue-400');
+        scanBtn.disabled = true;
 
-        // Simulate AI Fraud Detection (Mock Delay)
-        setTimeout(() => {
-            statusText.innerHTML = '<span class="text-emerald-400 font-bold tracking-wide">Analyzing Network Packets...</span>';
-        }, 1500);
+        try {
+            // Python Backend ko request bhejna
+            const response = await fetch('http://127.0.0.1:8000/scan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    packet_data: "Incoming SMS: Click here for free-money and update Aadhaar" 
+                })
+            });
 
-        setTimeout(() => {
-            statusText.innerHTML = '<span class="text-emerald-400 font-bold tracking-wide">Checking UPI Vectors...</span>';
-        }, 3000);
+            const data = await response.json();
 
-        setTimeout(() => {
-            // End Scan Simulation
-            scanBtn.classList.remove('scale-95');
+            // AI ka Result show karna
+            if (data.fraud_detected) {
+                statusText.innerHTML = `<span class="text-red-500 font-bold">ߚ FRAUD DETECTED! Alert: ${data.alert_message_hindi}</span>`;
+            } else {
+                statusText.innerHTML = `<span class="text-emerald-500 font-bold">✅ Network Safe.</span>`;
+            }
+
+        } catch (error) {
+            console.error("Backend offline:", error);
+            statusText.innerHTML = '<span class="text-red-500">Error: Cannot connect to Kavach.ai Core. Server chalu kar bhai.</span>';
+        } finally {
+            // UI Reset
             container.classList.remove('scanning-active');
-            
-            // Show Secure Status
-            statusText.innerHTML = '<span class="text-emerald-500 font-bold">✓ System Secure. No threats detected.</span>';
-            
-            // Reset after 3 seconds
             setTimeout(() => {
-                isScanning = false;
-                statusText.innerHTML = 'System idle. Tap to secure.';
-                statusText.className = 'mt-10 text-gray-400 text-sm h-5 transition-all duration-300';
-            }, 3000);
-            
-        }, 4500);
+                scanBtn.disabled = false;
+                statusText.innerHTML = '<span class="text-gray-400 text-sm">System idle. Tap to secure.</span>';
+            }, 5000);
+        }
     });
 });
